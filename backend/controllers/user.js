@@ -7,6 +7,9 @@ const jwt = require("jsonwebtoken");
 const register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
+    if (!username || !email || !password || !role) {
+      return res.send({ msg: "All fields are required" });
+    }
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -14,18 +17,18 @@ const register = async (req, res) => {
     } else {
       let hashedPassword = await bcrypt.hash(password, 10);
       // Create a new user
-      const user = new User({
+      const user = {
         username,
         email,
         password: hashedPassword,
         role, // This will be 'student' by default, but can be 'admin' if specified
-      });
+      };
 
-      await user.save();
-      res.status(201).json({ message: "User registered successfully" });
+      await User.create(user);
+      res.status(201).send({ message: "User registered successfully" });
     }
   } catch (err) {
-    res.status(400).json({ error: err.message, msg: "hi" });
+    res.status(400).send({ error: err.message, msg: "hi" });
   }
 };
 
@@ -35,28 +38,27 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).send({ error: "Invalid credentials" });
     }
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-    res.json({ token });
+    res.send({ token });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
-
 
 // Get a user by ID
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
+    if (!user) return res.status(404).send({ error: "User not found" });
+    res.send(user);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 
@@ -70,10 +72,10 @@ const updateUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     });
-    if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
+    if (!user) return res.status(404).send({ error: "User not found" });
+    res.send(user);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 
@@ -81,10 +83,10 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
-    res.json({ message: "User deleted successfully" });
+    if (!user) return res.status(404).send({ error: "User not found" });
+    res.send({ msg: "User deleted successfully" });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 
@@ -94,9 +96,9 @@ const getAllUserAttempts = async (req, res) => {
     const attempts = await Attempt.find({ user: req.params.id }).populate(
       "quiz"
     );
-    res.json(attempts);
+    res.send(attempts);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 
