@@ -10,11 +10,12 @@ const port = 4000;
 app.use(express.json());
 app.use(cors());
 
-// routes 
 // user routes
-app.use("/api/user",require("./routes/user"))
-// admin routes 
-app.use("/api/admin",require("./routes/admin"))
+app.use("/api/user", require("./routes/user"));
+// admin routes
+app.use("/api/admin", require("./routes/admin"));
+// quiz routes
+app.use("/api/quiz", require("./routes/quiz.routes"));
 
 app.listen(port, () => {
   console.log(`Serever is start listening on port ${port}`);
