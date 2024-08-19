@@ -1,4 +1,4 @@
-const mongoose = require("mongooe");
+const mongoose = require("mongoose");
 
 const statisticSchema = new mongoose.Schema({
   totalQuizzesTaken: { type: Number, default: 0 },

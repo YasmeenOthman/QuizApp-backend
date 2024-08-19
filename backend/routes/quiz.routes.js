@@ -13,10 +13,10 @@ const {
 } = require("../controllers/quiz.controller");
 
 router.post("/", authenticate, isAdmin, createQuiz);
-router.get("/", authenticate, isAdmin, getAllQuizzes);
-router.get("/:id", authenticate, isAdmin, getQuiz);
+router.get("/", getAllQuizzes);
+router.get("/:id", getQuiz);
 router.put("/:id", authenticate, isAdmin, updateQuiz);
 router.delete("/:id", authenticate, isAdmin, deleteQuiz);
-router.get("/:id/questions", authenticate, isAdmin, getQuizQuestins);
+router.get("/:id/questions", getQuizQuestins);
 
 module.exports = router;

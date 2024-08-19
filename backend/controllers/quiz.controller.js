@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Quiz = require("../models/Quiz");
 const Question = require("../models/Question");
+const Category = require("../models/category");
 
 // Create a new quiz
 const createQuiz = async (req, res) => {
@@ -18,7 +19,9 @@ const createQuiz = async (req, res) => {
 // Get all quizzes
 const getAllQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find().populate("createdBy");
+    const quizzes = await Quiz.find()
+      .populate("createdBy")
+      .populate("category");
     res.send(quizzes);
   } catch (err) {
     console.log(err.message);

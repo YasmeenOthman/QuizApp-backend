@@ -8,7 +8,7 @@ const {
   updateUser,
   deleteUser,
   getAllUsers,
-} = require("../controllers/admin");
+} = require("../controllers/admin.controller");
 
 // Admin routes (restricted to admins only)
 router.post("/register-admin", authenticate, isAdmin, registerUserByAdmin);
