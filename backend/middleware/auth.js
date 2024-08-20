@@ -1,6 +1,4 @@
-
-const jwt = require("jsonwebtoken")
-
+const jwt = require("jsonwebtoken");
 
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -13,11 +11,13 @@ const authenticate = (req, res, next) => {
 
       next();
     } catch (error) {
-      return res.status(403).json({ error: "Failed to authenticate token." });
+      return res
+        .status(403)
+        .json({ error: error.message, msg: "Failed to authenticate token." });
     }
   } else {
     res.status(401).json({ error: "No token provided." });
   }
 };
 
-module.exports = authenticate; 
+module.exports = authenticate;

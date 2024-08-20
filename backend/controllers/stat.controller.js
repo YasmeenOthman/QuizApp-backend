@@ -3,9 +3,9 @@ const Statistic = require("../models/stats");
 const getAllStatistics = async (req, res) => {
   try {
     const stats = await Statistic.findOne(); // Assuming only one document for global stats
-    res.json(stats);
+    res.send(stats);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 
@@ -15,9 +15,9 @@ const updateStatistics = async (req, res) => {
       new: true,
       upsert: true,
     });
-    res.json(stats);
+    res.send(stats);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 module.exports = { getAllStatistics, updateStatistics };

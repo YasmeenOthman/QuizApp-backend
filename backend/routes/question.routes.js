@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const authenticate = require("../middleware/auth");
+const isAdmin = require("../middleware/isAdmin");
 
 const {
   createQuestion,
@@ -10,7 +12,7 @@ const {
 } = require("../controllers/question.controller");
 
 // Create a new question
-router.post("/", createQuestion);
+router.post("/", authenticate, isAdmin, createQuestion);
 
 // Get all questions for a specific quiz
 router.get("/quiz/:quizId", getQuestionsByQuiz);

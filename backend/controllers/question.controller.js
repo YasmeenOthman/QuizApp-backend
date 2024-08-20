@@ -4,24 +4,33 @@ const Question = require("../models/question");
 // Create a new question
 const createQuestion = async (req, res) => {
   try {
-    const questionData = {
-      quiz: req.body.quizId,
-      questionText: req.body.questionText,
-      questionType: req.body.questionType,
-      choices: req.body.choices,
-      correctAnswer: req.body.correctAnswer,
-      explanation: req.body.explanation,
-    };
+    const {
+      quizId,
+      questionText,
+      questionType,
+      choices,
+      correctAnswer,
+      explanation,
+    } = req.body;
 
-    const question = new Question(questionData);
-    await question.save();
+    // Create the new question
+    const question = new Question({
+      quiz: quizId,
+      questionText,
+      questionType,
+      choices,
+      correctAnswer,
+      explanation,
+    });
+    // Save the question to the database
+    const savedQuestion = await question.save();
 
-    // Update the quiz with the new question ID
-    await Quiz.findByIdAndUpdate(req.body.quizId, {
-      $push: { questions: question._id },
+    // Add the question to the quiz's questions array
+    await Quiz.findByIdAndUpdate(quizId, {
+      $push: { questions: savedQuestion._id },
     });
 
-    res.status(201).send(question);
+    res.status(201).send(savedQuestion);
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ msg: "Internal server error", error: err.message });
