@@ -13,9 +13,10 @@ app.use(cors());
 //Serving routes
 app.use("/api/user", require("./routes/user.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
+app.use("/api/category", require("./routes/category.routes"));
 app.use("/api/quiz", require("./routes/quiz.routes"));
 app.use("/api/question", require("./routes/question.routes"));
-app.use("/api/category", require("./routes/category.routes"));
+app.use("/api/answer", require("./routes/answer.routes"));
 app.use("/api/attempt", require("./routes/attempt.routes"));
 app.use("/api/stat", require("./routes/stat.routes"));
 

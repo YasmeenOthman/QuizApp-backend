@@ -3,8 +3,23 @@ const Question = require("../models/question");
 // Create a new question
 const createQuestion = async (req, res) => {
   try {
-    const question = new Question(req.body);
+    const questionData = {
+      quiz: req.body.quizId,
+      questionText: req.body.questionText,
+      questionType: req.body.questionType,
+      choices: req.body.choices,
+      correctAnswer: req.body.correctAnswer,
+      explanation: req.body.explanation,
+    };
+
+    const question = new Question(questionData);
     await question.save();
+
+    // Update the quiz with the new question ID
+    await Quiz.findByIdAndUpdate(req.body.quizId, {
+      $push: { questions: question._id },
+    });
+
     res.status(201).send(question);
   } catch (err) {
     console.log(err.message);

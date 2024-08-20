@@ -4,7 +4,7 @@ const {
   createAnswer,
   getAnswersByAttempt,
   updateAnswer,
-} = require("../controllers/answerController");
+} = require("../controllers/answer.controller");
 
 // Create an answer
 router.post("/", createAnswer);

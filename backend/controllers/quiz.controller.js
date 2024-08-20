@@ -7,8 +7,36 @@ const Category = require("../models/category");
 // Create a new quiz
 const createQuiz = async (req, res) => {
   try {
-    const quiz = req.body;
-    await Quiz.create(quiz);
+    const userId = req.user._id;
+
+    // Check if the category exists, otherwise create it
+    let category = await Category.findOne({ name: req.body.categoryName });
+    if (!category) {
+      category = new Category({
+        name: req.body.categoryName,
+        description: req.body.categoryDescription,
+      });
+      await category.save();
+    }
+
+    const categoryId = category._id;
+
+    // Create the quiz
+    const quizData = {
+      title: req.body.title,
+      description: req.body.description,
+      category: categoryId,
+      createdBy: userId,
+      status: req.body.status,
+    };
+
+    const quiz = new Quiz(quizData);
+    await quiz.save();
+
+    // Update the category with the new quiz ID
+    category.quizzes.push(quiz._id);
+    await category.save();
+
     res.status(201).send(quiz);
   } catch (err) {
     console.log(err.message);
