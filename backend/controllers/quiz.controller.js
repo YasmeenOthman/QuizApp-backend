@@ -22,12 +22,13 @@ const createQuiz = async (req, res) => {
     const categoryId = category._id;
 
     // Create the quiz
+    const { title, description, status } = req.body;
     const quizData = {
-      title: req.body.title,
-      description: req.body.description,
+      title,
+      description,
+      status,
       category: categoryId,
       createdBy: userId,
-      status: req.body.status,
     };
 
     const quiz = new Quiz(quizData);
