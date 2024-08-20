@@ -1,3 +1,4 @@
+const Quiz = require("../models/Quiz");
 const Question = require("../models/question");
 
 // Create a new question

@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const attemptSchema = new mongoose.Schema({
@@ -10,5 +9,5 @@ const attemptSchema = new mongoose.Schema({
   timeTaken: Number, // In seconds
 });
 
-const Attempt =  mongoose.model("Attempt", attemptSchema);
+const Attempt = mongoose.model("Attempt", attemptSchema);
 module.exports = Attempt;
