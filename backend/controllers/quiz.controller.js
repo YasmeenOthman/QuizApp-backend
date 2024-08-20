@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Quiz = require("../models/Quiz");
-const Question = require("../models/Question");
+const Question = require("../models/question");
 const Category = require("../models/category");
 
 // Create a new quiz
