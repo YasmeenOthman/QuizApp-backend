@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const categorySchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true, unique: true, lowercase: true },
   description: String,
   quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
 });

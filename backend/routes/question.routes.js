@@ -12,7 +12,8 @@ const {
 } = require("../controllers/question.controller");
 
 // Create a new question
-router.post("/", authenticate, isAdmin, createQuestion);
+// router.post("/", authenticate, isAdmin, createQuestion);
+router.post("/", createQuestion);
 
 // Get all questions for a specific quiz
 router.get("/quiz/:quizId", getQuestionsByQuiz);

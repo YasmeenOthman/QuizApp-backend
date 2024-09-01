@@ -26,11 +26,17 @@ const createQuestion = async (req, res) => {
     const savedQuestion = await question.save();
 
     // Add the question to the quiz's questions array
-    await Quiz.findByIdAndUpdate(quizId, {
-      $push: { questions: savedQuestion._id },
-    });
+    let quiz = await Quiz.findByIdAndUpdate(quizId);
+    if (quiz) {
+      quiz.questions.push(savedQuestion._id);
+      await quiz.save();
+    } else {
+      res.send({ msg: "The quiz is not found" });
+    }
 
-    res.status(201).send(savedQuestion);
+    res
+      .status(201)
+      .send({ msg: "question created successfully", savedQuestion });
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ msg: "Internal server error", error: err.message });
@@ -79,7 +85,7 @@ const deleteQuestion = async (req, res) => {
   try {
     const question = await Question.findByIdAndDelete(req.params.id);
     if (!question) return res.status(404).send({ error: "Question not found" });
-    res.send({ message: "Question deleted successfully" });
+    res.send({ msg: "Question deleted successfully" });
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ msg: "Internal server error", error: err.message });

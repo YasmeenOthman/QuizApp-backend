@@ -7,7 +7,7 @@ const Category = require("../models/category");
 // Create a new quiz
 const createQuiz = async (req, res) => {
   try {
-    const userId = req.user._id;
+    // const userId = req.user._id;
 
     // Check if the category exists, otherwise create it
     let category = await Category.findOne({ name: req.body.categoryName });
@@ -22,13 +22,15 @@ const createQuiz = async (req, res) => {
     const categoryId = category._id;
 
     // Create the quiz
-    const { title, description, status } = req.body;
+    const { title, description, status, imageUrl } = req.body;
+    // let oldQuiz = await Quiz.findOne({ title });
     const quizData = {
       title,
       description,
       status,
+      imageUrl,
       category: categoryId,
-      createdBy: userId,
+      // createdBy: userId,
     };
 
     const quiz = new Quiz(quizData);
@@ -38,7 +40,9 @@ const createQuiz = async (req, res) => {
     category.quizzes.push(quiz._id);
     await category.save();
 
-    res.status(201).send(quiz);
+    res
+      .status(201)
+      .send({ msg: `${quiz.title} quiz is created successfully`, quiz });
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ msg: "internal server error", error: err.message });
@@ -61,7 +65,9 @@ const getAllQuizzes = async (req, res) => {
 // Get a quiz by ID
 const getQuiz = async (req, res) => {
   try {
-    const quiz = await Quiz.findById(req.params.id).populate("questions");
+    const quiz = await Quiz.findById(req.params.id)
+      .populate("questions")
+      .populate("category");
     if (!quiz) return res.status(404).send({ error: "Quiz not found" });
     res.send(quiz);
   } catch (err) {
@@ -88,7 +94,12 @@ const updateQuiz = async (req, res) => {
 const deleteQuiz = async (req, res) => {
   try {
     const quiz = await Quiz.findByIdAndDelete(req.params.id);
+
     if (!quiz) return res.status(404).send({ error: "Quiz not found" });
+    // Remove the quiz ID from the category's quizzes array
+    await Category.findByIdAndUpdate(quiz.category, {
+      $pull: { quizzes: quiz._id },
+    });
     res.send({ message: "Quiz deleted successfully" });
   } catch (err) {
     console.log(err.message);

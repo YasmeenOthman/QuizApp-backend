@@ -6,14 +6,14 @@ const jwt = require("jsonwebtoken");
 // Register a new user
 const register = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
-    if (!username || !email || !password || !role) {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
       return res.send({ msg: "All fields are required" });
     }
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      return res.status(400).send({ msg: "User already exists" });
     } else {
       let hashedPassword = await bcrypt.hash(password, 10);
       // Create a new user
@@ -21,14 +21,15 @@ const register = async (req, res) => {
         username,
         email,
         password: hashedPassword,
-        role, // This will be 'student' by default, but can be 'admin' if specified
       };
 
       await User.create(user);
-      res.status(201).send({ message: "User registered successfully" });
+      res
+        .status(201)
+        .send({ msg: "User registered successfully", status: true });
     }
   } catch (err) {
-    res.status(400).send({ error: err.message, msg: "hi" });
+    res.status(400).send({ msg: err.message });
   }
 };
 
@@ -37,17 +38,25 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).send({ error: "Invalid credentials" });
+
+    if (!user) {
+      return res.status(401).send({ msg: "Invalid credentials, wrong email" });
+    } else {
+      if (!(await bcrypt.compare(password, user.password))) {
+        return res
+          .status(401)
+          .send({ msg: "Invalid credentials, wrong password" });
+      }
     }
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-    res.send({ token });
+    res.send({ token, status: true });
   } catch (err) {
-    res.status(400).send({ error: err.message });
+    res.status(400).send({ msg: err.message });
   }
 };
 
@@ -55,10 +64,10 @@ const login = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).send({ error: "User not found" });
+    if (!user) return res.status(404).send({ msg: "User not found" });
     res.send(user);
   } catch (err) {
-    res.status(400).send({ error: err.message });
+    res.status(400).send({ msg: err.message });
   }
 };
 
