@@ -48,12 +48,15 @@ const login = async (req, res) => {
           .send({ msg: "Invalid credentials, wrong password" });
       }
     }
+    const payload = {
+      id: user._id,
+      role: user.role,
+      username: user.username,
+    };
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.SECRET_KEY,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign(payload, process.env.SECRET_KEY, {
+      expiresIn: "1h",
+    });
     res.send({ token, status: true });
   } catch (err) {
     res.status(400).send({ msg: err.message });
