@@ -82,7 +82,7 @@ const updateQuiz = async (req, res) => {
     const quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    if (!quiz) return res.status(404).send({ error: "Quiz not found" });
+    if (!quiz) return res.status(404).send({ msg: "Quiz not found" });
     res.send(quiz);
   } catch (err) {
     console.log(err.message);
@@ -95,12 +95,12 @@ const deleteQuiz = async (req, res) => {
   try {
     const quiz = await Quiz.findByIdAndDelete(req.params.id);
 
-    if (!quiz) return res.status(404).send({ error: "Quiz not found" });
+    if (!quiz) return res.status(404).send({ msg: "Quiz not found" });
     // Remove the quiz ID from the category's quizzes array
     await Category.findByIdAndUpdate(quiz.category, {
       $pull: { quizzes: quiz._id },
     });
-    res.send({ message: "Quiz deleted successfully" });
+    res.send({ msg: "Quiz deleted successfully" });
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ msg: "internal server error", error: err.message });
