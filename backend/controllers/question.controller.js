@@ -81,10 +81,32 @@ const updateQuestion = async (req, res) => {
 };
 
 // Delete a question by ID
+
 const deleteQuestion = async (req, res) => {
   try {
-    const question = await Question.findByIdAndDelete(req.params.id);
+    const questionId = req.params.id;
+
+    // Find the question
+    const question = await Question.findById(questionId);
     if (!question) return res.status(404).send({ error: "Question not found" });
+
+    // Remove the question from the quiz's questions array
+    // Find the quiz that contains this question
+    const quiz = await Quiz.findById(question.quiz);
+    if (!quiz) return res.status(404).send({ error: "Quiz not found" });
+
+    // Find the index of the questionId in the quiz's questions array
+    const index = quiz.questions.indexOf(questionId);
+
+    // If the questionId is found, use splice to remove it
+    if (index !== -1) {
+      quiz.questions.splice(index, 1);
+      await quiz.save();
+    }
+
+    // Delete the question
+    await Question.findByIdAndDelete(questionId);
+
     res.send({ msg: "Question deleted successfully" });
   } catch (err) {
     console.log(err.message);

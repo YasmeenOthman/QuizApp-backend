@@ -7,7 +7,7 @@ const Category = require("../models/category");
 // Create a new quiz
 const createQuiz = async (req, res) => {
   try {
-    // const userId = req.user._id;
+    const userId = req.user.id;
 
     // Check if the category exists, otherwise create it
     let category = await Category.findOne({ name: req.body.categoryName });
@@ -30,7 +30,7 @@ const createQuiz = async (req, res) => {
       status,
       imageUrl,
       category: categoryId,
-      // createdBy: userId,
+      createdBy: userId,
     };
 
     const quiz = new Quiz(quizData);
@@ -67,7 +67,8 @@ const getQuiz = async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.id)
       .populate("questions")
-      .populate("category");
+      .populate("category")
+      .populate("createdBy", "email");
     if (!quiz) return res.status(404).send({ error: "Quiz not found" });
     res.send(quiz);
   } catch (err) {
