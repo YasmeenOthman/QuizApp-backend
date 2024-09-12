@@ -8,6 +8,7 @@ const {
   updateUser,
   deleteUser,
   getAllUsers,
+  
 } = require("../controllers/admin.controller");
 
 // Admin routes (restricted to admins only)
