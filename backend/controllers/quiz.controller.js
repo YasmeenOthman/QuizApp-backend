@@ -1,5 +1,4 @@
 const express = require("express");
-const router = express.Router();
 const Quiz = require("../models/Quiz");
 const Question = require("../models/question");
 const Category = require("../models/category");
@@ -80,14 +79,30 @@ const getQuiz = async (req, res) => {
 // Update a quiz by ID
 const updateQuiz = async (req, res) => {
   try {
-    const quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
+    console.log("Request body:", req.body);
+
+    // Create an object to store fields to be updated
+    let updateFields = gatherUpdateFields(req.body);
+
+    // If a category is provided, find or create it, and update the category field
+    if (req.body.category && req.body.category.name) {
+      updateFields.category = await findOrCreateCategory(
+        req.body.category.name
+      );
+    }
+
+    // Find the quiz by ID and update with the collected fields
+    const quiz = await Quiz.findByIdAndUpdate(req.params.id, updateFields, {
       new: true,
-    });
+    }).populate("category");
+
     if (!quiz) return res.status(404).send({ msg: "Quiz not found" });
-    res.send(quiz);
+
+    console.log("Updated quiz:", quiz);
+    return res.send(quiz);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).send({ msg: "internal server error", error: err.message });
+    console.error("Error updating quiz:", err.message);
+    res.status(500).send({ msg: "Internal server error", error: err.message });
   }
 };
 
@@ -117,6 +132,26 @@ const getQuizQuestins = async (req, res) => {
     console.log(err.message);
     res.status(500).send({ msg: "internal server error", error: err.message });
   }
+};
+
+// Helper function to gather fields to be updated
+const gatherUpdateFields = (body) => {
+  let fields = {};
+  ["title", "description", "imageUrl", "status"].forEach((field) => {
+    if (body[field]) fields[field] = body[field];
+  });
+  return fields;
+};
+
+// Helper function to find or create a category
+const findOrCreateCategory = async (categoryName) => {
+  let category = await Category.findOne({ name: categoryName });
+  if (!category) {
+    category = new Category({ name: categoryName });
+    await category.save();
+    console.log(`Created new category: ${categoryName}`);
+  }
+  return category._id;
 };
 
 module.exports = {
