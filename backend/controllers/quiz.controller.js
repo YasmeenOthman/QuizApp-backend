@@ -79,8 +79,6 @@ const getQuiz = async (req, res) => {
 // Update a quiz by ID
 const updateQuiz = async (req, res) => {
   try {
-    console.log("Request body:", req.body);
-
     // Create an object to store fields to be updated
     let updateFields = gatherUpdateFields(req.body);
 
@@ -138,7 +136,9 @@ const getQuizQuestins = async (req, res) => {
 const gatherUpdateFields = (body) => {
   let fields = {};
   ["title", "description", "imageUrl", "status"].forEach((field) => {
-    if (body[field]) fields[field] = body[field];
+    // Include the field even if it is an empty string
+    // checks if the body has the property, regardless of its value. If the property exists, it will be included in the fields object, even if the value is an empty string.
+    if (body.hasOwnProperty(field)) fields[field] = body[field];
   });
   return fields;
 };
