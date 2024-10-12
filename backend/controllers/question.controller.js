@@ -11,8 +11,10 @@ const createQuestion = async (req, res) => {
       choices,
       correctAnswer,
       explanation,
+      equation,
+      hasEquation,
     } = req.body;
-
+    console.log(req.body);
     // Create the new question
     const question = new Question({
       quiz: quizId,
@@ -21,6 +23,8 @@ const createQuestion = async (req, res) => {
       choices,
       correctAnswer,
       explanation,
+      equation,
+      hasEquation,
     });
     // Save the question to the database
     const savedQuestion = await question.save();

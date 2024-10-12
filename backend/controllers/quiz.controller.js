@@ -95,8 +95,6 @@ const updateQuiz = async (req, res) => {
     }).populate("category");
 
     if (!quiz) return res.status(404).send({ msg: "Quiz not found" });
-
-    console.log("Updated quiz:", quiz);
     return res.send(quiz);
   } catch (err) {
     console.error("Error updating quiz:", err.message);

@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const questionSchema = new mongoose.Schema({
   quiz: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
   questionText: { type: String, required: true },
+  hasEquation: { type: Boolean },
+  equation: { type: String },
   questionType: {
     type: String,
     enum: ["multiple-choice", "true-false"],
