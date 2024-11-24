@@ -61,6 +61,21 @@ const getAllQuizzes = async (req, res) => {
   }
 };
 
+// Get Active quizzes
+const getActiveQuizzes = async (req, res) => {
+  try {
+    const quizzes = await Quiz.find({
+      status: "active",
+    })
+      .populate("createdBy")
+      .populate("category");
+    res.send(quizzes);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send({ msg: "internal server error", error: err.message });
+  }
+};
+
 // Get a quiz by ID
 const getQuiz = async (req, res) => {
   try {
@@ -76,7 +91,7 @@ const getQuiz = async (req, res) => {
   }
 };
 
-// Update a quiz by ID
+// __________________Update a quiz by ID_____________________-
 const updateQuiz = async (req, res) => {
   try {
     // Create an object to store fields to be updated
@@ -88,21 +103,35 @@ const updateQuiz = async (req, res) => {
         req.body.category.name
       );
     }
+    // Prevent changing status to 'active' if there are no questions
+    if (req.body.status === "active") {
+      const quiz = await Quiz.findById(req.params.id);
+      if (!quiz.questions.length) {
+        return res.status(400).send({
+          msg: "Cannot activate a quiz without questions",
+          status: false,
+        });
+      }
+    }
 
     // Find the quiz by ID and update with the collected fields
     const quiz = await Quiz.findByIdAndUpdate(req.params.id, updateFields, {
       new: true,
     }).populate("category");
 
-    if (!quiz) return res.status(404).send({ msg: "Quiz not found" });
+    if (!quiz)
+      return res.status(404).send({ msg: "Quiz not found", status: false });
     return res.send(quiz);
   } catch (err) {
-    console.error("Error updating quiz:", err.message);
-    res.status(500).send({ msg: "Internal server error", error: err.message });
+    res.status(500).send({
+      msg: "Internal server error,Error updating quiz",
+      error: err.message,
+      status: false,
+    });
   }
 };
 
-// Delete a quiz by ID
+// ________________ Delete a quiz by ID_______________
 const deleteQuiz = async (req, res) => {
   try {
     const quiz = await Quiz.findByIdAndDelete(req.params.id);
@@ -135,7 +164,8 @@ const gatherUpdateFields = (body) => {
   let fields = {};
   ["title", "description", "imageUrl", "status"].forEach((field) => {
     // Include the field even if it is an empty string
-    // checks if the body has the property, regardless of its value. If the property exists, it will be included in the fields object, even if the value is an empty string.
+    // checks if the body has the property, regardless o
+    // f its value. If the property exists, it will be included in the fields object, even if the value is an empty string.
     if (body.hasOwnProperty(field)) fields[field] = body[field];
   });
   return fields;
@@ -159,4 +189,5 @@ module.exports = {
   deleteQuiz,
   updateQuiz,
   getQuizQuestins,
+  getActiveQuizzes,
 };

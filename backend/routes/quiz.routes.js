@@ -10,13 +10,15 @@ const {
   deleteQuiz,
   updateQuiz,
   getQuizQuestins,
+  getActiveQuizzes,
 } = require("../controllers/quiz.controller");
 
 router.post("/", authenticate, isAdmin, createQuiz);
-router.get("/", getAllQuizzes);
-router.get("/:id", getQuiz);
 router.put("/:id", authenticate, isAdmin, updateQuiz);
 router.delete("/:id", authenticate, isAdmin, deleteQuiz);
+router.get("/", authenticate, isAdmin, getAllQuizzes);
+router.get("/activeQuizzez", getActiveQuizzes);
+router.get("/:id", getQuiz);
 router.get("/:id/questions", getQuizQuestins);
 
 module.exports = router;

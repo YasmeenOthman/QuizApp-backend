@@ -8,12 +8,14 @@ const register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
     if (!username || !email || !password) {
-      return res.send({ msg: "All fields are required" });
+      return res.send({ msg: "All fields are required", status: false });
     }
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).send({ msg: "User already exists" });
+      return res
+        .status(400)
+        .send({ msg: "User already exists", status: false });
     } else {
       let hashedPassword = await bcrypt.hash(password, 10);
       // Create a new user
@@ -41,12 +43,14 @@ const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).send({ msg: "Invalid credentials, wrong email" });
+      return res
+        .status(401)
+        .send({ msg: "Invalid credentials, wrong email", status: false });
     } else {
       if (!(await bcrypt.compare(password, user.password))) {
         return res
           .status(401)
-          .send({ msg: "Invalid credentials, wrong password" });
+          .send({ msg: "Invalid credentials, wrong password", status: false });
       }
     }
     const payload = {
