@@ -17,4 +17,3 @@ router.delete("/deleteUser/:id", authenticate, isAdmin, deleteUser);
 router.get("/users", authenticate, isAdmin, getAllUsers);
 
 module.exports = router;
-

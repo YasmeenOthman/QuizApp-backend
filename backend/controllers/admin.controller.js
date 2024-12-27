@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // admin create another admin || new student
 const registerUserByAdmin = async (req, res) => {
@@ -41,7 +42,7 @@ const registerUserByAdmin = async (req, res) => {
 // Get all users (admin only)
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select("-password");
     res.send(users);
   } catch (err) {
     console.log(err.message);
@@ -52,16 +53,27 @@ const getAllUsers = async (req, res) => {
 // Update user or admin by admin
 const updateUser = async (req, res) => {
   try {
-    const updates = req.body;
+    const updates = { ...req.body };
     // Optionally hash the new password if it's being updated
     if (updates.password) {
       updates.password = await bcrypt.hash(updates.password, 10);
     }
+
     const user = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     });
     if (!user) return res.status(404).send({ error: "User not found" });
-    res.send(user);
+    // Generate a new token with updated user info
+    // const payload = {
+    //   id: user._id,
+    //   role: user.role,
+    //   username: user.username,
+    // };
+    // const token = jwt.sign(payload, process.env.SECRET_KEY, {
+    //   expiresIn: "1h",
+    // });
+    // res.send({ user, token });
+    res.send({ user });
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ msg: "internal server error", error: err.message });
