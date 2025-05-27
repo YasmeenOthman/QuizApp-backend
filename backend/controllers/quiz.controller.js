@@ -134,6 +134,7 @@ const updateQuiz = async (req, res) => {
 // ________________ Delete a quiz by ID_______________
 const deleteQuiz = async (req, res) => {
   try {
+    console.log(req.params.id);
     const quiz = await Quiz.findByIdAndDelete(req.params.id);
 
     if (!quiz) return res.status(404).send({ msg: "Quiz not found" });

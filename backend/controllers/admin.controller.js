@@ -42,6 +42,7 @@ const registerUserByAdmin = async (req, res) => {
 // Get all users (admin only)
 const getAllUsers = async (req, res) => {
   try {
+    // select to exclude the password to be not sent in the response
     const users = await User.find().select("-password");
     res.send(users);
   } catch (err) {
@@ -63,16 +64,7 @@ const updateUser = async (req, res) => {
       new: true,
     });
     if (!user) return res.status(404).send({ error: "User not found" });
-    // Generate a new token with updated user info
-    // const payload = {
-    //   id: user._id,
-    //   role: user.role,
-    //   username: user.username,
-    // };
-    // const token = jwt.sign(payload, process.env.SECRET_KEY, {
-    //   expiresIn: "1h",
-    // });
-    // res.send({ user, token });
+
     res.send({ user });
   } catch (err) {
     console.log(err.message);

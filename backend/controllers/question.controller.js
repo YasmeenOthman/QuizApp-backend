@@ -14,7 +14,7 @@ const createQuestion = async (req, res) => {
       equation,
       hasEquation,
     } = req.body;
-    console.log(req.body);
+
     // Create the new question
     const question = new Question({
       quiz: quizId,
