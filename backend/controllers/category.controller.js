@@ -1,5 +1,5 @@
 const Category = require("../models/category");
-const Quiz = require("../models/Quiz");
+const Quiz = require("../models/quiz");
 
 // Create a new category
 const createCategory = async (req, res) => {

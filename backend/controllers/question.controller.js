@@ -1,4 +1,4 @@
-const Quiz = require("../models/Quiz");
+const Quiz = require("../models/quiz");
 const Question = require("../models/question");
 
 // Create a new question
